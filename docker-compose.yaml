@@ -1,0 +1,8 @@
+services:
+  rps:
+    build: .
+    image: rps-game:latest
+    container_name: rps-game
+    ports:
+      - "5000:5000"
+    restart: unless-stopped

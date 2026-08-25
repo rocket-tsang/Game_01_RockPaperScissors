@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏大厅 - 石头剪刀布</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family:
+                "Microsoft YaHei",
+                "Segoe UI",
+                Arial,
+                sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 18px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 25px 16px 40px;
+        }
+
+        .game-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .game-icon {
+            text-align: center;
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .game-description {
+            text-align: center;
+            color: #777;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 22px;
+        }
+
+        .status {
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+            background: #f3f4f6;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .status.waiting {
+            color: #666;
+        }
+
+        .status.started {
+            background: #eefbf3;
+            color: #16803c;
+        }
+
+        .status.finished {
+            background: #fff4e5;
+            color: #a15c00;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #666;
+        }
+
+        .join-button {
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 17px;
+            cursor: pointer;
+            background: #222;
+            color: #ffffff;
+        }
+
+        .join-button:hover {
+            background: #000;
+        }
+
+        .join-button:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        .message {
+            min-height: 24px;
+            text-align: center;
+            margin-top: 14px;
+            font-size: 14px;
+            color: #d33;
+        }
+
+        .rules {
+            margin-top: 20px;
+            padding: 18px;
+            background: #ffffff;
+            border-radius: 12px;
+        }
+
+        .rules h2 {
+            margin: 0 0 12px;
+            font-size: 18px;
+        }
+
+        .rules ul {
+            margin: 0;
+            padding-left: 22px;
+            color: #666;
+            line-height: 1.9;
+            font-size: 14px;
+        }
+
+        .teacher-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #777;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .teacher-link:hover {
+            color: #222;
+        }
+
+        @media (max-width: 480px) {
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .container {
+                padding: 18px 12px 30px;
+            }
+
+            .game-card {
+                padding: 20px 16px;
+            }
+
+            .game-icon {
+                font-size: 52px;
+            }
+
+            .game-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>🎮 游戏大厅</h1>
+    <p>课堂互动游戏平台</p>
+</header>
+
+<main class="container">
+
+    <section class="game-card">
+
+        <div class="game-icon">
+            ✊ ✌️ 🖐️
+        </div>
+
+        <div class="game-title">
+            石头剪刀布
+        </div>
+
+        <div class="game-description">
+            双人单败淘汰赛<br>
+            胜者自动进入下一轮
+        </div>
+
+        <div id="gameStatus" class="status waiting">
+            正在检查游戏状态……
+        </div>
+
+        <div class="form-group">
+            <label for="playerName">
+                请输入你的姓名
+            </label>
+
+            <input
+                type="text"
+                id="playerName"
+                placeholder="例如：张三"
+                maxlength="20"
+                autocomplete="off"
+            >
+        </div>
+
+        <button
+            id="joinButton"
+            class="join-button"
+            onclick="joinGame()"
+        >
+            进入游戏
+        </button>
+
+        <div id="message" class="message"></div>
+
+    </section>
+
+    <section class="rules">
+
+        <h2>游戏规则</h2>
+
+        <ul>
+            <li>每场比赛固定 2 名玩家。</li>
+            <li>系统自动将玩家两两配对。</li>
+            <li>胜者自动进入下一轮。</li>
+            <li>败者淘汰。</li>
+            <li>如果晋级人数为奇数，系统自动安排一名玩家轮空。</li>
+            <li>石头、剪刀、布相同时视为平局，需要重新出拳。</li>
+            <li>最后一名胜者成为本次比赛冠军。</li>
+        </ul>
+
+    </section>
+
+    <a href="/teacher" class="teacher-link">
+        教师控制台
+    </a>
+
+</main>
+
+<script>
+
+    const gameStatus = document.getElementById("gameStatus");
+    const joinButton = document.getElementById("joinButton");
+    const playerName = document.getElementById("playerName");
+    const message = document.getElementById("message");
+
+
+    // ========================================================
+    // 获取游戏状态
+    // ========================================================
+
+    async function checkGameStatus() {
+
+        try {
+
+            const response = await fetch("/api/teacher/status");
+
+            const data = await response.json();
+
+            if (!data.started) {
+
+                gameStatus.className = "status waiting";
+                gameStatus.textContent = "教师尚未开始游戏";
+
+                joinButton.disabled = true;
+
+                return;
+            }
+
+            if (data.finished) {
+
+                gameStatus.className = "status finished";
+                gameStatus.textContent = "本次游戏已经结束";
+
+                joinButton.disabled = true;
+
+                return;
+            }
+
+            gameStatus.className = "status started";
+
+            gameStatus.textContent =
+                "游戏进行中 · 当前玩家 " +
+                data.player_count +
+                " 人";
+
+            joinButton.disabled = false;
+
+        } catch (error) {
+
+            gameStatus.className = "status waiting";
+
+            gameStatus.textContent =
+                "无法连接游戏服务器";
+
+            joinButton.disabled = true;
+        }
+    }
+
+
+    // ========================================================
+    // 加入游戏
+    // ========================================================
+
+    async function joinGame() {
+
+        const name = playerName.value.trim();
+
+        message.textContent = "";
+
+        if (!name) {
+
+            message.textContent = "请输入你的姓名";
+
+            playerName.focus();
+
+            return;
+        }
+
+        joinButton.disabled = true;
+
+        joinButton.textContent = "正在加入……";
+
+        try {
+
+            const response = await fetch(
+                "/api/join",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        name: name
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+
+                message.textContent =
+                    data.message || "加入游戏失败";
+
+                joinButton.disabled = false;
+
+                joinButton.textContent = "进入游戏";
+
+                return;
+            }
+
+            // 保存玩家ID
+            localStorage.setItem(
+                "rps_player_id",
+                data.player_id
+            );
+
+            localStorage.setItem(
+                "rps_player_name",
+                data.name
+            );
+
+            // 进入游戏页面
+            window.location.href = "/game";
+
+        } catch (error) {
+
+            message.textContent =
+                "连接服务器失败，请稍后再试";
+
+            joinButton.disabled = false;
+
+            joinButton.textContent = "进入游戏";
+        }
+    }
+
+
+    // ========================================================
+    // 回车进入游戏
+    // ========================================================
+
+    playerName.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                joinGame();
+            }
+        }
+    );
+
+
+    // ========================================================
+    // 页面加载
+    // ========================================================
+
+    checkGameStatus();
+
+    // 每2秒检查一次游戏状态
+    setInterval(
+        checkGameStatus,
+        2000
+    );
+
+</script>
+
+</body>
+</html>
